@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0e0b1f">
+  <title>幸運抽獎</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="backdrop" id="backdrop" aria-hidden="true" hidden></div>
+  <div class="sky" aria-hidden="true"></div>
+
+  <div id="app">
+    <nav class="demo-bar" id="demoBar" hidden>
+      <div class="row">
+        <span>樣式</span>
+        <button data-style="輪盤">輪盤</button>
+        <button data-style="扭蛋機">扭蛋機</button>
+        <button data-style="刮刮卡">刮刮卡</button>
+      </div>
+      <div class="row">
+        <span>配色</span>
+        <button data-theme="奢華金">奢華金</button>
+        <button data-theme="清新綠">清新綠</button>
+        <button data-theme="喜氣紅">喜氣紅</button>
+        <button data-theme="極簡白">極簡白</button>
+      </div>
+    </nav>
+
+    <header class="hero">
+      <img class="logo" id="logo" alt="" hidden>
+      <div class="eyebrow">LUCKY DRAW</div>
+      <h1 id="title">&nbsp;</h1>
+      <p class="greet" id="greet"></p>
+    </header>
+
+    <main id="stage" class="stage"></main>
+
+    <section class="info" id="info" hidden>
+      <h2>獎項一覽</h2>
+      <ul class="prize-list" id="prizeList"></ul>
+      <h2>活動說明</h2>
+      <div class="desc" id="desc"></div>
+    </section>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>載入中…</p>
+  </div>
+
+  <div class="modal" id="modal" hidden>
+    <div class="rays" id="rays"></div>
+    <div class="modal-card" id="modalCard">
+      <img class="m-img" id="mImg" alt="" hidden>
+      <div class="m-eyebrow" id="mEyebrow"></div>
+      <div class="m-prize" id="mPrize"></div>
+      <p class="m-text" id="mText"></p>
+      <a class="btn" id="mLink" target="_blank" rel="noopener" hidden></a>
+      <button class="btn ghost" id="mClose">完成</button>
+    </div>
+  </div>
+
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
