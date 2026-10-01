@@ -4,7 +4,7 @@
  * 網址參數：
  *   liff=  LIFF ID
  *   api=   Apps Script 部署 ID（AKfycb... 那串）或完整 /exec 網址
- *   demo   預覽模式：不連 LINE、用假資料（沒帶 api 參數時自動進入）
+ *   demo   預覽模式：不連 LINE、用假資料（一定要明確帶 ?demo 才會進入）
  *
  * 抽獎結果一律由 Apps Script 決定，這裡只負責播動畫。
  */
@@ -12,10 +12,14 @@
   'use strict';
 
   const qs = new URLSearchParams(location.search);
-  const apiParam = qs.get('api') || '';
+  // LINE 第一次轉址時，參數可能被包在 liff.state 裡，也一併讀取當備援
+  const stateQs = new URLSearchParams((qs.get('liff.state') || '').replace(/^[^?]*\?/, ''));
+  const param = k => qs.get(k) || stateQs.get(k) || '';
+  const apiParam = param('api');
   const API = apiParam.startsWith('http') ? apiParam : apiParam ? 'https://script.google.com/macros/s/' + apiParam + '/exec' : '';
-  const LIFF_ID = qs.get('liff') || '';
-  const DEMO = qs.has('demo') || !API;
+  const LIFF_ID = param('liff');
+  // 預覽模式只在網址明確帶 demo 時才啟用；正式網址缺參數要報錯，不能默默變成假資料
+  const DEMO = qs.has('demo');
 
   // ===================== 配色主題 =====================
   // 試算表「配色主題」選一組，再用「背景色／主色／獎項色盤／外殼色」覆蓋
@@ -123,7 +127,10 @@
   async function main() {
     try {
       if (!DEMO) {
-        if (!LIFF_ID) throw new Error('網址缺少 liff 參數，請檢查 LIFF 的 Endpoint URL 設定');
+        if (!API || !LIFF_ID) {
+          throw new Error('抽獎頁設定不完整（缺少 ' + [!API && 'api', !LIFF_ID && 'liff'].filter(Boolean).join('、') +
+            ' 參數），請通知主辦單位檢查 LIFF 的 Endpoint URL');
+        }
         await liff.init({ liffId: LIFF_ID });
         if (!liff.isLoggedIn()) {
           liff.login({ redirectUri: location.href });
