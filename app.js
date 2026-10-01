@@ -74,17 +74,36 @@
 
   // ===================== API =====================
 
+  /**
+   * 呼叫 Apps Script。冷啟動或網路不穩時第一次常失敗，自動重試最多 2 次。
+   * 抽獎（draw）重試是安全的：後端每人只會記一次，重送只會拿到同一個結果。
+   */
   async function api(action) {
     if (DEMO) return mockApi(action);
-    const res = await fetch(API, { method: 'POST', body: JSON.stringify({ action, idToken }) });
-    if (!res.ok) throw new Error('伺服器回應錯誤（' + res.status + '）');
-    return res.json();
+    let lastErr;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      if (attempt) {
+        $('loadingText').textContent = '連線中，請稍候…';
+        await sleep(1200 * attempt);
+      }
+      try {
+        const res = await fetch(API, { method: 'POST', body: JSON.stringify({ action, idToken }) });
+        if (!res.ok) throw new Error('伺服器回應錯誤（' + res.status + '）');
+        return await res.json();
+      } catch (err) {
+        lastErr = err;
+        console.warn('第 ' + (attempt + 1) + ' 次連線失敗', err);
+      }
+    }
+    throw new Error('連線不太順利，請關閉頁面後再試一次（' + (lastErr && lastErr.message) + '）');
   }
 
   /** 抽獎：失敗時丟出含訊息的錯誤 */
   async function requestDraw() {
     const r = await api('draw');
     if (!r.ok) throw new Error(r.message || '抽獎失敗，請稍後再試');
+    // 開頁時沒抽過、這次卻回「已抽過」＝第一次其實成功只是回應掉了（重試造成），照新結果播動畫
+    if (r.already && info && !info.previous) r.already = false;
     return r;
   }
 
@@ -246,9 +265,14 @@
     notice('⚠️', message, '<button class="btn" onclick="location.reload()">重新整理</button>');
   }
 
+  /** 預覽模式專用的切換列：正式頁面的 HTML 裡沒有這段，只有預覽時才動態產生 */
   function setupDemoBar() {
-    const bar = $('demoBar');
-    bar.hidden = false;
+    const bar = document.createElement('nav');
+    bar.className = 'demo-bar';
+    const row = (label, key, items) => '<div class="row"><span>' + label + '</span>' +
+      items.map(v => '<button data-' + key + '="' + v + '">' + v + '</button>').join('') + '</div>';
+    bar.innerHTML = row('樣式', 'style', ['輪盤', '扭蛋機', '刮刮卡']) + row('配色', 'theme', Object.keys(THEMES));
+    $('app').prepend(bar);
     bar.querySelectorAll('button').forEach(b => {
       const key = b.dataset.style ? 'style' : 'theme';
       const current = key === 'style' ? info.style : info.look.preset;

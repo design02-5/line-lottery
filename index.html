@@ -8,29 +8,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <!-- 更新 style.css / app.js 時，把 v= 的數字加 1，手機才會抓新檔（GitHub Pages 會快取 10 分鐘） -->
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <div class="backdrop" id="backdrop" aria-hidden="true" hidden></div>
   <div class="sky" aria-hidden="true"></div>
 
   <div id="app">
-    <nav class="demo-bar" id="demoBar" hidden>
-      <div class="row">
-        <span>樣式</span>
-        <button data-style="輪盤">輪盤</button>
-        <button data-style="扭蛋機">扭蛋機</button>
-        <button data-style="刮刮卡">刮刮卡</button>
-      </div>
-      <div class="row">
-        <span>配色</span>
-        <button data-theme="奢華金">奢華金</button>
-        <button data-theme="清新綠">清新綠</button>
-        <button data-theme="喜氣紅">喜氣紅</button>
-        <button data-theme="極簡白">極簡白</button>
-      </div>
-    </nav>
-
     <header class="hero">
       <img class="logo" id="logo" alt="" hidden>
       <div class="eyebrow">LUCKY DRAW</div>
@@ -50,7 +35,7 @@
 
   <div class="loading" id="loading">
     <div class="spinner"></div>
-    <p>載入中…</p>
+    <p id="loadingText">載入中…</p>
   </div>
 
   <div class="modal" id="modal" hidden>
@@ -67,6 +52,6 @@
 
   <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
